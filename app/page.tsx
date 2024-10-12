@@ -1,5 +1,5 @@
 import Main from "@/components/home/Main";
-import Navigation from "@/components/home/Navigation";
+import Navigation from "@/components/home/Navigation/index";
 
 export default function Home() {
   return (
