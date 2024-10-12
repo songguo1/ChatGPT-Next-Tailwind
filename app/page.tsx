@@ -1,9 +1,11 @@
-import Image from "next/image";
+import Main from "@/components/home/Main";
+import Navigation from "@/components/home/Navigation";
 
 export default function Home() {
   return (
-   <>
-    <h1>Welcome to ChatGPT</h1>
-    </>
+   <div className="h-full flex">
+    <Navigation/>
+    <Main/>
+    </div>
   );
 }

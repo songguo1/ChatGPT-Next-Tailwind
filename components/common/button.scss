@@ -1,0 +1,111 @@
+.button {
+    position: relative;
+    width: 100px; // 缩小宽度
+    height: 50px; // 缩小高度
+    background:
+      radial-gradient(circle at 18% 10px, #fff, #fff 3px, transparent 4px, transparent),
+      radial-gradient(circle at 35% 22.5px, #fff, #fff 0.5px, transparent 1px, transparent),
+      radial-gradient(circle at 10% 35px, #fff, #fff 1.25px, transparent 2.5px, transparent),
+      radial-gradient(circle at 25% 7.5px, #fff, #fff 1.5px, transparent 2px, transparent),
+      radial-gradient(circle at 15% 25px, #fff, #fff 0.75px, transparent 1.25px, transparent),
+      radial-gradient(circle at 30% 37.5px, #fff, #fff 2.5px, transparent 3px, transparent),
+      radial-gradient(circle at 5% 15px, #fff, #fff 0.25px, transparent 0.75px, transparent),
+      radial-gradient(circle at 25% 30px, #fff, #fff 0.25px, transparent 0.75px, transparent),
+      radial-gradient(circle at 7% 17.5px, #fff, #fff 0.25px, transparent 0.75px, transparent),
+      linear-gradient(90deg, #2b303e, #2b303e 50%, #5a81b4 50%, #5a81b4);
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    border-radius: 25px; // 缩小圆角
+    box-shadow:
+      0 -1.5px 2px #999,
+      inset 0 1.5px 2.5px #333,
+      0 2px 2px #ffe,
+      inset 0 -1.5px 2.5px #ddd;
+    cursor: pointer;
+    overflow: hidden;
+    transition: .5s all;
+  
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      transition: .5s all;
+    }
+  
+    &::before {
+      width: 37.5px; // 缩小大小
+      height: 37.5px; // 缩小大小
+      border-radius: 50%;
+      background: #e9cb50;
+      top: 5px; // 调整位置
+      left: 5px; // 调整位置
+      box-shadow:
+        0 0 2.5px #333,
+        inset 1px 1px 1.5px #f8f4e4,
+        inset -1px -1px 1.5px #665613;
+      z-index: 1;
+    }
+  
+    &::after {
+      width: 35px; // 缩小大小
+      height: 35px; // 缩小大小
+      top: 7.5px; // 调整位置
+      left: 7.5px; // 调整位置
+      border-radius: 50%;
+      box-shadow:
+        5px 30px 0 5px #fff,
+        32.5px 30px 0 2.5px #fff,
+        47.5px 35px 0 5px #fff,
+        67.5px 22.5px 0 2.5px #fff,
+        85px 17.5px 0 5px #fff,
+        97.5px -2.5px 0 5px #fff,
+        -5px 0 0 25px rgba(255, 255, 255, .2),
+        7.5px 0 0 25px rgba(255, 255, 255, .15),
+        20px 0 0 25px rgba(255, 255, 255, .21),
+        5px 20px 0 5px #abc1d9,
+        35px 17.5px 0 5px #abc1d9,
+        47.5px 20px 0 5px #abc1d9,
+        67.5px 10px 0 5px #abc1d9,
+        77.5px 7.5px 0 5px #abc1d9,
+        95px -10px 0 5px #abc1d9;
+    }
+  }
+  
+  .button:hover::before {
+    filter: contrast(90%) brightness(110%);
+    transform: scale(1.05);
+  }
+  
+  .button.active {
+    background-position: 0 0;
+  
+    &::before {
+      transform: translateX(50px);
+      background:
+        radial-gradient(circle at 50% 10px, #939aa5, #939aa5 3.25px, transparent 4px, transparent),
+        radial-gradient(circle at 35% 22.5px, #939aa5, #939aa5 5.75px, transparent 6px, transparent),
+        radial-gradient(circle at 72% 25px, #939aa5, #939aa5 4.25px, transparent 4.5px, transparent),
+        radial-gradient(#cbcdda, #cbcdda);
+    }
+  
+    &::after {
+      transform: translateX(50px);
+      box-shadow:
+        5px 30px 0 5px transparent,
+        32.5px 30px 0 2.5px transparent,
+        47.5px 35px 0 5px transparent,
+        67.5px 22.5px 0 2.5px transparent,
+        85px 17.5px 0 5px transparent,
+        97.5px -2.5px 0 5px transparent,
+        5px 0 0 25px rgba(255, 255, 255, .2),
+        -7.5px 0 0 25px rgba(255, 255, 255, .15),
+        -20px 0 0 25px rgba(255, 255, 255, .21),
+        5px 20px 0 5px transparent,
+        35px 17.5px 0 5px transparent,
+        47.5px 20px 0 5px transparent,
+        67.5px 10px 0 5px transparent,
+        77.5px 7.5px 0 5px transparent,
+        95px -10px 0 5px transparent;
+    }
+  }
