@@ -1,3 +1,4 @@
+import AppContextProvider from "@/components/AppContext";
 import "./globals.css";
 
 export default function RootLayout({
@@ -8,7 +9,10 @@ export default function RootLayout({
   return (
     <html lang="en">
      <body>
-     {children}
+      <AppContextProvider>
+      {children}
+      </AppContextProvider>
+
      </body>
     </html>
   );

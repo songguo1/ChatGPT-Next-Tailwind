@@ -5,6 +5,7 @@ type Props = {
   icon?: IconType;
   variant?: "default" | "outline" |"text"
   className?: string;
+  onClick?:()=>void
 
 };
 
@@ -14,12 +15,13 @@ const variantStyles = {
   text: 'text-black dark:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700',
 };
 
-export default function Menubutton({ children, icon: Icon, variant, className = "" }: Props) {
+export default function Menubutton({ children, icon: Icon, variant, className = "",onClick }: Props) {
   return (
     <button
       className={`inline-flex items-center min-w-[38px] min-h-[38px] rounded px-3 py-1.5
         ${variantStyles[variant || "default"]}
          ${className}`}
+         onClick={onClick}
     >
       {Icon && <Icon className={`text-lg ${children? " mr-2" : ""}`}/>}
       {children}
