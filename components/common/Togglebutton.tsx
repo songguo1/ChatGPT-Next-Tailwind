@@ -1,27 +1,25 @@
 "use client"; // 确保当前组件为客户端组件
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import "./button.scss";
 
-export default function Button() {
-  useEffect(() => {
-    const btn = document.getElementById("btn");
-    const handleClick = () => {
-      btn?.setAttribute(
-        "class",
-        btn.getAttribute("class") === "button active"
-          ? "button"
-          : "button active"
-      );
-    };
+export default function Button({onClick}:{
+  onClick: () => void;
+}) {
+  const btnRef = useRef<HTMLDivElement | null>(null);
 
-    btn?.addEventListener("click", handleClick);
+  const handleClick = () => {
+    if (btnRef.current) {
+      btnRef.current.classList.toggle("active");
+    }
+    onClick(); // 调用传入的 onClick 函数
+  };
 
-    // 清理函数，避免内存泄漏
-    return () => {
-      btn?.removeEventListener("click", handleClick);
-    };
-  }, []); // 添加依赖数组
-
-  return <div id="btn" className="button"></div>;
+  return (
+    <div
+      ref={btnRef}
+      onClick={handleClick}
+      className="button"
+    ></div>
+  );
 }

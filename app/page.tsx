@@ -1,9 +1,13 @@
-import Main from "@/components/home/Main/Menu";
+"use client"
+import { AppContext } from "@/components/AppContext";
+import Main from "@/components/home/Main";
 import Navigation from "@/components/home/Navigation/index";
+import { useContext } from "react";
 
 export default function Home() {
+  const {state}=useContext(AppContext)
   return (
-   <div className="h-full flex">
+   <div className={`${state.themeMode=="dark"?"dark":""} h-full flex`}>
     <Navigation/>
     <Main/>
     </div>
