@@ -9,6 +9,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors:{
+        primary:{
+          500: "#d7fbe8",
+          600: "#9df3c4",
+          700:"#62d2a2",
+          800:"#1fab89"
+        }
+      }
     },
   },
   plugins: [],

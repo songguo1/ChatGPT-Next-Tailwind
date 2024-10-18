@@ -5,6 +5,7 @@ import { ActionType } from "@/reducers/AppReducer";
 import { useContext } from "react";
 import { HiPlus } from "react-icons/hi";
 import { LuPanelLeft } from "react-icons/lu";
+import ChatList from "@/components/home/Navigation/ChatList";
 
 export default function Menubar() {
   const { state, dispatch } = useContext(AppContext);
@@ -24,6 +25,7 @@ export default function Menubar() {
         }}
         variant="outline"
       ></Menubutton>
+      
     </nav>
   );
 }
