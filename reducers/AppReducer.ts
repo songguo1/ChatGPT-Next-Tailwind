@@ -1,13 +1,24 @@
+import { Message } from "postcss"
+
 //实现一种类似于Redux的全局状态管理
 export type State={
     displayNavigation:boolean
     themeMode:"dark"|"light"
     currentModel: string
+    messageList:Message[]
 }
 
 export enum ActionType{
-    UPDATE="UPDATE"
+    UPDATE="UPDATE",
+    ADD_MESSAGE="ADD_MESSAGE",
+    UPDATE_MESSAGE="UPDATE_MESSAGE"
 }
+
+type MessageAction={
+    type:ActionType.ADD_MESSAGE | ActionType.UPDATE_MESSAGE
+    message:Message
+}
+ 
 
 export type Action={
     type:ActionType.UPDATE,
@@ -18,7 +29,8 @@ export type Action={
 export const initState:State={
     displayNavigation:true,
     themeMode:"light",
-    currentModel:"gpt-3.5-turto"
+    currentModel:"gpt-3.5-turto",
+    messageList:[]
 }
 
 export function reducer(state:State,action:Action){

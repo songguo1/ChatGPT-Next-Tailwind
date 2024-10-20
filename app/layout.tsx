@@ -1,5 +1,6 @@
 import AppContextProvider from "@/components/AppContext";
-import "./globals.css";
+import "@/public/style/globals.css";
+import "@/public/style/Markdown.css";
 
 export default function RootLayout({
   children,
@@ -8,12 +9,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-     <body>
-      <AppContextProvider>
-      {children}
-      </AppContextProvider>
-
-     </body>
+      <body>
+        <AppContextProvider>{children}</AppContextProvider>
+      </body>
     </html>
   );
 }
