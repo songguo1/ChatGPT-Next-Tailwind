@@ -4,7 +4,7 @@ import Menubutton from "@/components/common/Menubutton";
 import { ActionType } from "@/reducers/AppReducer";
 import { Message, MessageRequestBody } from "@/types/chat";
 import { ACTION } from "next/dist/client/components/app-router-headers";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
 import { PiLightningFill,PiStopBold } from "react-icons/pi";
@@ -13,7 +13,8 @@ import { v4 as uuidv4, v4 } from "uuid";
 
 export default function ChatInput() {
   const [messageText, setMessageText] = useState("");
-  
+  //消息终止状态
+  const stopRef=useRef(false)
 
   const {
     state: { messageList, currentModel, streamingId },
@@ -22,26 +23,46 @@ export default function ChatInput() {
 
   async function send() {
     const message: Message = {
-      id: uuidv4(),
-      role: "user",
-      content: messageText,
-    };
+        id: uuidv4(),
+        role: "user",
+        content: messageText
+    }
+    dispatch({ type: ActionType.ADD_MESSAGE, message })
+    const messages = messageList.concat([message])
+    doSend(messages)
+}
 
-    const messages = messageList.concat([message]);
+async function resend() {
+    const messages = [...messageList]
+    if (
+        messages.length !== 0 &&
+        messages[messages.length - 1].role === "assistant"
+    ) {
+        dispatch({
+            type: ActionType.REMOVE_MESSAGE,
+            message: messages[messages.length - 1]
+        })
+        messages.splice(messages.length - 1, 1)
+    }
+    doSend(messages)
+}
+
+  async function doSend(messages:Message[]) {
     const body: MessageRequestBody = {
       messages,
       model: currentModel,
     };
-
-    dispatch({ type: ActionType.ADD_MESSAGE, message });
-
+    //发送框清空
     setMessageText("");
+    //消息流控制器
+    const controller=new AbortController()
 
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      signal:controller.signal,
       body: JSON.stringify(body),
     });
     if (!response.ok) {
@@ -64,6 +85,12 @@ export default function ChatInput() {
     let done = false;
     let content = "";
     while (!done) {
+      if(stopRef.current){
+
+        controller.abort()
+        stopRef.current=false
+        break
+      }
       const result = await reader.read();
       done = result.done;
       const chunk = decoder.decode(result.value);
@@ -85,6 +112,9 @@ export default function ChatInput() {
               icon={PiStopBold}
               variant="primary"
               className="font-medium"
+              onClick={()=>{
+                stopRef.current=true
+              }}
             >
               停止生成
             </Menubutton>
