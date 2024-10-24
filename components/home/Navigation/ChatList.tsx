@@ -1,7 +1,8 @@
 "use client";
 import { groupByDate } from "@/common/util";
-import { chatList } from "@/type/chat";
-import { useMemo, useState } from "react";
+import { chatList } from "@/types/chat";
+import { useEventBusContext } from "@/components/EventBusContext";
+import { useEffect, useMemo, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTrashBold } from "react-icons/pi";
@@ -29,6 +30,15 @@ export default function ChatList() {
   const groupList = useMemo(() => {
     return groupByDate(chatList);
   }, [chatList]);
+  const { subscribe, unsubscribe } = useEventBusContext()
+
+    useEffect(() => {
+        const callback: EventListener = () => {
+            console.log("fetchChatList")
+        }
+        subscribe("fetchChatList", callback)
+        return () => unsubscribe("fetchChatList", callback)
+    }, [])
   return (
     <div className="flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto">
       {groupList.map(([data, list]) => {

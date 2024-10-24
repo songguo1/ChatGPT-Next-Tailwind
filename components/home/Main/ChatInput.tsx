@@ -1,71 +1,102 @@
 "use client";
 import { AppContext } from "@/components/AppContext";
 import Menubutton from "@/components/common/Menubutton";
+import { useEventBusContext } from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { Message, MessageRequestBody } from "@/types/chat";
 import { ACTION } from "next/dist/client/components/app-router-headers";
 import { useContext, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
-import { PiLightningFill,PiStopBold } from "react-icons/pi";
+import { PiLightningFill, PiStopBold } from "react-icons/pi";
 import TextareaAutosize from "react-textarea-autosize";
 import { v4 as uuidv4, v4 } from "uuid";
 
 export default function ChatInput() {
   const [messageText, setMessageText] = useState("");
   //消息终止状态
-  const stopRef=useRef(false)
+  const stopRef = useRef(false);
 
+  const chatIdRef = useRef("");
   const {
     state: { messageList, currentModel, streamingId },
     dispatch,
   } = useContext(AppContext);
+  const { publish } = useEventBusContext();
 
   async function createOrUpdateMessage(message: Message) {
     const response = await fetch("/api/message/update", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(message)
-    })
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
     if (!response.ok) {
-        console.log(response.statusText)
-        return
+      console.log(response.statusText);
+      return;
     }
-    const { data } = await response.json()
-    return data.message
-}
+    const { data } = await response.json();
+    if (!chatIdRef.current) {
+      chatIdRef.current = data.message.chatId;
+      publish("fetchChatList");
+    }
+    return data.message;
+  }
 
-async function send() {
+  async function deleteMessage(id: string) {
+    const response = await fetch(`/api/message/delete$id=${id}`, {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      return;
+    }
+    const { data } = await response.json();
+    return data.message;
+  }
+
+  //点击发送消息事件
+  async function send() {
     const message = await createOrUpdateMessage({
-        id: "",
-        role: "user",
-        content: messageText,
-        chatId: ""
-    })
-    dispatch({ type: ActionType.ADD_MESSAGE, message })
-    const messages = messageList.concat([message])
-    doSend(messages)
-}
+      id: "",
+      role: "user",
+      content: messageText,
+      chatId: chatIdRef.current,
+    });
+    dispatch({ type: ActionType.ADD_MESSAGE, message });
+    const messages = messageList.concat([message]);
+    doSend(messages);
+  }
 
-
-async function resend() {
-    const messages = [...messageList]
+  //重新发送事件
+  async function resend() {
+    const messages = [...messageList];
     if (
-        messages.length !== 0 &&
-        messages[messages.length - 1].role === "assistant"
+      messages.length !== 0 &&
+      messages[messages.length - 1].role === "assistant"
     ) {
-        dispatch({
-            type: ActionType.REMOVE_MESSAGE,
-            message: messages[messages.length - 1]
-        })
-        messages.splice(messages.length - 1, 1)
+      const result = await deleteMessage(messages[messages.length - 1].id);
+      if (!result) {
+        console.log("delete message error");
+        return;
+      }
+    
+      //消息列表删除上一条消息
+      dispatch({
+        type: ActionType.REMOVE_MESSAGE,
+        message: messages[messages.length - 1],
+      });
+      messages.splice(messages.length - 1, 1);
     }
-    doSend(messages)
-}
+    doSend(messages);
+  }
 
-  async function doSend(messages:Message[]) {
+  //发送请求
+  async function doSend(messages: Message[]) {
     const body: MessageRequestBody = {
       messages,
       model: currentModel,
@@ -73,14 +104,14 @@ async function resend() {
     //发送框清空
     setMessageText("");
     //消息流控制器
-    const controller=new AbortController()
+    const controller = new AbortController();
 
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      signal:controller.signal,
+      signal: controller.signal,
       body: JSON.stringify(body),
     });
     if (!response.ok) {
@@ -91,35 +122,46 @@ async function resend() {
       console.log("body error");
       return;
     }
-    const responseMessage: Message = {
-      id: uuidv4(),
+    const responseMessage: Message =await createOrUpdateMessage( {
+      id: "",
       role: "assistant",
       content: "",
-      chatId:''
-    };
+      chatId: chatIdRef.current,
+    });
 
     dispatch({ type: ActionType.ADD_MESSAGE, message: responseMessage });
+    dispatch({
+      type: ActionType.UPDATE,
+      field: "streamingId",
+      value: responseMessage.id
+  })
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let done = false;
     let content = "";
     while (!done) {
-      if(stopRef.current){
-
-        controller.abort()
-        stopRef.current=false
-        break
+      if (stopRef.current) {
+        controller.abort();
+        stopRef.current = false;
+        break;
       }
       const result = await reader.read();
       done = result.done;
       const chunk = decoder.decode(result.value);
       content += chunk;
+
+      //更新消息内容
       dispatch({
         type: ActionType.UPDATE_MESSAGE,
         message: { ...responseMessage, content },
       });
     }
-    setMessageText("");
+    createOrUpdateMessage({ ...responseMessage, content })
+    dispatch({
+        type: ActionType.UPDATE,
+        field: "streamingId",
+        value: ""
+    })
   }
   return (
     // 这里的输入框的样式的定位直接相对
@@ -131,8 +173,8 @@ async function resend() {
               icon={PiStopBold}
               variant="primary"
               className="font-medium"
-              onClick={()=>{
-                stopRef.current=true
+              onClick={() => {
+                stopRef.current = true;
               }}
             >
               停止生成
@@ -142,6 +184,9 @@ async function resend() {
               icon={MdRefresh}
               variant="primary"
               className="font-medium"
+              onClick={() => {
+                resend();
+              }}
             >
               重新生成
             </Menubutton>
@@ -165,7 +210,9 @@ async function resend() {
             icon={FiSend}
             disabled={messageText.trim() === "" || streamingId !== ""}
             variant="primary"
-            onClick={send}
+            onClick={() => {
+              send();
+            }}
           />
         </div>
         <footer className="text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6">

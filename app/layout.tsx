@@ -1,4 +1,5 @@
 import AppContextProvider from "@/components/AppContext";
+import EventBusContextProvider from "@/components/EventBusContext";
 import "@/public/style/globals.css";
 import "@/public/style/Markdown.css";
 
@@ -10,7 +11,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppContextProvider>{children}</AppContextProvider>
+        <AppContextProvider>
+          <EventBusContextProvider>
+            {children}
+          </EventBusContextProvider>
+        </AppContextProvider>
       </body>
     </html>
   );
