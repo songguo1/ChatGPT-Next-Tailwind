@@ -27,7 +27,7 @@ type MessageAction={
     message:Message
 }
 
-// 模型类型的更改
+// 字段的更改
 type UpdateAction = {
     //action类型
     type: ActionType.UPDATE
@@ -57,9 +57,9 @@ export const initState:State={
 // reducer 函数用于处理状态更新
 export function reducer(state:State,action:Action){
     switch(action.type){
-        //改变模型类型
+        //改变字段值
         case ActionType.UPDATE:
-            // 改变模型类型
+
             return {...state,[action.field]:action.value}
 
         //添加消息

@@ -5,7 +5,7 @@ import { useEventBusContext } from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { Message, MessageRequestBody } from "@/types/chat";
 import { ACTION } from "next/dist/client/components/app-router-headers";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
 import { PiLightningFill, PiStopBold } from "react-icons/pi";
@@ -13,20 +13,37 @@ import TextareaAutosize from "react-textarea-autosize";
 import { v4 as uuidv4, v4 } from "uuid";
 
 export default function ChatInput() {
+  //输入框内容
   const [messageText, setMessageText] = useState("");
   //消息终止状态
   const stopRef = useRef(false);
 
+  //当前聊天id
   const chatIdRef = useRef("");
+
+  //获取当前聊天id
   const {
-    state: { messageList, currentModel, streamingId },
+    state: { messageList, currentModel, streamingId, selectedChat },
     dispatch,
   } = useContext(AppContext);
+
+  //发布事件
   const { publish } = useEventBusContext();
 
+  //切换聊天页时更换id
+  useEffect(() => {
+    if (chatIdRef.current === selectedChat?.id) {
+      return;
+    }
+    chatIdRef.current = selectedChat?.id ?? "";
+    //如果切换消息页时，正在生成消息，则停止生成
+    stopRef.current = true;
+  }, [selectedChat]);
+
+  //创建或更新消息页
   async function createOrUpdateMessage(message: Message) {
     const response = await fetch("/api/message/update", {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -40,13 +57,18 @@ export default function ChatInput() {
     if (!chatIdRef.current) {
       chatIdRef.current = data.message.chatId;
       publish("fetchChatList");
+      dispatch({
+        type: ActionType.UPDATE,
+        field: "selectedChat",
+        value:{id:chatIdRef.current,} 
+      });
     }
     return data.message;
   }
 
   async function deleteMessage(id: string) {
     const response = await fetch(`/api/message/delete$id=${id}`, {
-      method: "delete",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -67,6 +89,7 @@ export default function ChatInput() {
       content: messageText,
       chatId: chatIdRef.current,
     });
+
     dispatch({ type: ActionType.ADD_MESSAGE, message });
     const messages = messageList.concat([message]);
     doSend(messages);
@@ -84,7 +107,7 @@ export default function ChatInput() {
         console.log("delete message error");
         return;
       }
-    
+
       //消息列表删除上一条消息
       dispatch({
         type: ActionType.REMOVE_MESSAGE,
@@ -97,6 +120,9 @@ export default function ChatInput() {
 
   //发送请求
   async function doSend(messages: Message[]) {
+    //如果切换聊天页，消息状态置为停止，需要再置为开始
+    stopRef.current = false;
+
     const body: MessageRequestBody = {
       messages,
       model: currentModel,
@@ -122,7 +148,7 @@ export default function ChatInput() {
       console.log("body error");
       return;
     }
-    const responseMessage: Message =await createOrUpdateMessage( {
+    const responseMessage: Message = await createOrUpdateMessage({
       id: "",
       role: "assistant",
       content: "",
@@ -133,8 +159,8 @@ export default function ChatInput() {
     dispatch({
       type: ActionType.UPDATE,
       field: "streamingId",
-      value: responseMessage.id
-  })
+      value: responseMessage.id,
+    });
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let done = false;
@@ -142,7 +168,6 @@ export default function ChatInput() {
     while (!done) {
       if (stopRef.current) {
         controller.abort();
-        stopRef.current = false;
         break;
       }
       const result = await reader.read();
@@ -156,12 +181,12 @@ export default function ChatInput() {
         message: { ...responseMessage, content },
       });
     }
-    createOrUpdateMessage({ ...responseMessage, content })
+    createOrUpdateMessage({ ...responseMessage, content });
     dispatch({
-        type: ActionType.UPDATE,
-        field: "streamingId",
-        value: ""
-    })
+      type: ActionType.UPDATE,
+      field: "streamingId",
+      value: "",
+    });
   }
   return (
     // 这里的输入框的样式的定位直接相对
@@ -210,9 +235,7 @@ export default function ChatInput() {
             icon={FiSend}
             disabled={messageText.trim() === "" || streamingId !== ""}
             variant="primary"
-            onClick={() => {
-              send();
-            }}
+            onClick={send}
           />
         </div>
         <footer className="text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6">

@@ -11,21 +11,31 @@ export default function Menubar() {
   const { state, dispatch } = useContext(AppContext);
   return (
     <nav className="flex space-x-3">
-      <Menubutton icon={HiPlus} variant="outline" className="flex-1">
+      <Menubutton
+        onClick={() => {
+          dispatch({
+            type: ActionType.UPDATE,
+            field: "selectedChat",
+            value: null,
+          });
+        }}
+        icon={HiPlus}
+        variant="outline"
+        className="flex-1"
+      >
         新建对话
       </Menubutton>
       <Menubutton
         icon={LuPanelLeft}
         onClick={() => {
           dispatch({
-            type:ActionType.UPDATE,
-            field:"displayNavigation",
-            value:false
-          })
+            type: ActionType.UPDATE,
+            field: "displayNavigation",
+            value: false,
+          });
         }}
         variant="outline"
       ></Menubutton>
-      
     </nav>
   );
 }

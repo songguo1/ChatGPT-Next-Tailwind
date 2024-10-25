@@ -12,7 +12,7 @@ export default function Navigation() {
     <nav
       className={`${
         state.displayNavigation ? "" : "hidden"
-      } relative h-full w-1/5 bg-gray-800 text-gray-300 p-4`}
+      }flex flex-col relative h-full w-1/5 bg-gray-800 text-gray-300 p-4`}
     >
       <Menubar />
       <ChatList/>

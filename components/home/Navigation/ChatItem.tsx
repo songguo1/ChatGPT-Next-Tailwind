@@ -1,12 +1,12 @@
-import { chatList } from "@/type/chat";
+import { Chat } from "@/types/chat";
 import { useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTrashBold } from "react-icons/pi";
 type Props = {
-  item: chatList;
+  item: Chat;
   selected: boolean;
-  onSelected: (chat: chatList) => void;
+  onSelected: (chat: Chat) => void;
 };
 
 export default function ChatItem({ item, selected, onSelected }: Props) {

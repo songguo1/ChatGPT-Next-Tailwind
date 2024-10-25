@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(request: NextRequest) {
+export async function POST(request: NextRequest) {
     const body = await request.json()
     const { id, ...data } = body
     if (!data.chatId) {
