@@ -1,4 +1,5 @@
-import { Message } from "@/types/chat"
+import { Message, Chat } from "@/types/chat"
+
 
 // 实现一种类似于Redux的全局状态管理
 export type State={
@@ -7,6 +8,7 @@ export type State={
     currentModel: string
     messageList:Message[]
     streamingId: string
+    selectedChat?:Chat
 }
 
 // 定义动作类型

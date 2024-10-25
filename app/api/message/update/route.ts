@@ -12,6 +12,16 @@ export async function PUT(request: NextRequest) {
         })
         data.chatId = chat.id
     }
+    else{
+        await prisma.chat.update({
+            data:{
+                updateTime: new Date()
+            },
+            where: {
+                id: data.chatId
+            }
+        })
+    }
     const message = await prisma.message.upsert({
         create: data,
         update: data,

@@ -1,14 +1,49 @@
 "use client"
 import { AppContext } from "@/components/AppContext"
 import Markdown from "@/components/common/Markdown"
+import { ActionType } from "@/reducers/AppReducer"
 import { Message } from "@/types/chat"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { SiOpenai } from "react-icons/si"
 
 export default function MessageList() {
     const {
-        state: { messageList, streamingId }
+        state: { messageList, streamingId,selectedChat },dispatch
     } = useContext(AppContext)
+
+    /**
+     * 点击侧边栏某个聊天选项时，获取聊天消息列表
+     * @param chatId 
+     * @returns 
+     */
+    async function getData(chatId: string) {
+        const response = await fetch(`/api/message/list?chatId=${chatId}`, {
+            method: "GET"
+        })
+        if (!response.ok) {
+            console.log(response.statusText)
+            return
+        }
+        const { data } = await response.json()
+        dispatch({
+            type: ActionType.UPDATE,
+            field: "messageList",
+            value: data.list
+        })
+    }
+
+    useEffect(() => {
+        if (selectedChat) {
+            getData(selectedChat.id)
+        } else {
+            dispatch({
+                type: ActionType.UPDATE,
+                field: "messageList",
+                value: []
+            })
+        }
+    }, [selectedChat])
+
     return (
         <div className='w-full pt-10 pb-48 dark:text-gray-300'>
             <ul>

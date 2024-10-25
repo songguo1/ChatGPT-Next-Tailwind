@@ -1,44 +1,97 @@
 "use client";
 import { groupByDate } from "@/common/util";
-import { chatList } from "@/types/chat";
+import { Chat } from "@/types/chat";
 import { useEventBusContext } from "@/components/EventBusContext";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md";
 import { PiChatBold, PiTrashBold } from "react-icons/pi";
 import ChatItem from "./ChatItem";
+import { AppContext } from "@/components/AppContext";
+import { ActionType } from "@/reducers/AppReducer";
 
 export default function ChatList() {
-  const [chatList, setChatList] = useState<chatList[]>([
-    {
-      id: 1,
-      title: "React入门实战教程",
-      updateTime: Date.now(),
-    },
-    {
-      id: 2,
-      title: "如何使用Next.js创建React项目1111111111",
-      updateTime: Date.now() + 1,
-    },
-    {
-      id: 3,
-      title: "知行小课",
-      updateTime: Date.now() + 2,
-    },
-  ]);
-  const [selectedItem, setSelectedItem] = useState<chatList>();
+  /**
+   * @description: 聊天列表数据
+   * @type {chatList[]}
+   */
+
+  const [chatList, setChatList] = useState<Chat[]>([]);
+  /**
+   * @description: 选中的聊天项
+   * @type {chatList}
+   */
+  const {state:{selectedChat},dispatch}=useContext(AppContext)
+
+  /**
+   * @description: 页码
+   * @type {number}
+   */
+  const pageRef=useRef(1)
+  /**
+   * @description: 聊天列表分组数据
+   * @type {[string, chatList[]][]}
+   */
   const groupList = useMemo(() => {
     return groupByDate(chatList);
   }, [chatList]);
-  const { subscribe, unsubscribe } = useEventBusContext()
+  /**
+   * @description: 事件总线
+   */
+  const { subscribe, unsubscribe } = useEventBusContext();
 
-    useEffect(() => {
-        const callback: EventListener = () => {
-            console.log("fetchChatList")
-        }
-        subscribe("fetchChatList", callback)
-        return () => unsubscribe("fetchChatList", callback)
-    }, [])
+  /**
+   * @description: 获取聊天列表数据
+   */
+  const getData=async()=>{
+    const res=await fetch(`/api/chat/list?page=${pageRef.current}`,{
+      method:"GET"
+    })
+    if(!res.ok){
+      console.error("获取聊天列表失败")
+      return
+    }
+    const {data}=await res.json()
+    if(pageRef.current===1){
+      setChatList(data.list)
+    }
+    else{
+      setChatList((prev)=>prev.concat(data.list))
+    }
+    
+  }
+    
+  /**
+   * @description: 初始化
+   */
+  useEffect(()=>{
+    getData()
+  },[])
+
+  /**
+   * @description: 监听分页事件
+   */
+  useEffect(() => {
+    const callback: EventListener = () => {
+        pageRef.current = 1
+        getData()
+    }
+    subscribe("fetchChatList", callback)
+    return () => unsubscribe("fetchChatList", callback)
+}, [])
+
+  /**
+   * @description: 监听事件
+   */
+  useEffect(() => {
+    const callback: EventListener = () => {
+      console.log("fetchChatList");
+    };
+    subscribe("fetchChatList", callback);
+    return () => unsubscribe("fetchChatList", callback);
+  }, []);
+
+  
   return (
     <div className="flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto">
       {groupList.map(([data, list]) => {
@@ -49,11 +102,19 @@ export default function ChatList() {
             </div>
             <ul className="mt-2 flex flex-col space-y-2">
               {list.map((item) => {
-                const selected = selectedItem?.id === item.id;
+                const selected = selectedChat?.id === item.id;
                 return (
-                  <ChatItem item={item} selected={selected} onSelected={(chat)=>{
-                    setSelectedItem(chat)
-                  }}></ChatItem>
+                  <ChatItem
+                    item={item}
+                    selected={selected}
+                    onSelected={(chat) => {
+                      dispatch({
+                        type:ActionType.UPDATE,
+                        field:"selectedChat",
+                        value:chat
+                      })
+                    }}
+                  ></ChatItem>
                 );
               })}
             </ul>
