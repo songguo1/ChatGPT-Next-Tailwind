@@ -5,6 +5,7 @@ import { useEventBusContext } from "@/components/EventBusContext";
 import { ActionType } from "@/reducers/AppReducer";
 import { Message, MessageRequestBody } from "@/types/chat";
 import { ACTION } from "next/dist/client/components/app-router-headers";
+import { title } from "process";
 import { useContext, useEffect, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdRefresh } from "react-icons/md";
@@ -47,7 +48,7 @@ export default function ChatInput() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(message),
+      body: JSON.stringify({message,title:messageText}),
     });
     if (!response.ok) {
       console.log(response.statusText);
@@ -91,6 +92,7 @@ export default function ChatInput() {
     });
 
     dispatch({ type: ActionType.ADD_MESSAGE, message });
+
     const messages = messageList.concat([message]);
     doSend(messages);
   }

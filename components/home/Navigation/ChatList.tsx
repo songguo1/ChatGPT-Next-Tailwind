@@ -70,9 +70,11 @@ export default function ChatList() {
   
     //监听滚动事件
     const handleScroll = () => {
+      
       if (chatListRef.current) {
         const element = chatListRef.current;
-        if (element.scrollTop + element.clientHeight >= element.scrollHeight) {
+
+        if (element.scrollTop + element.clientHeight >= element.scrollHeight-2) {
           console.log('加载更多');
           pageRef.current += 1; // 增加页码
           getData(); // 获取下一页数据
@@ -82,6 +84,7 @@ export default function ChatList() {
     
     useEffect(() => {
       const element = chatListRef.current;
+      console.log(element!.scrollTop);
       if (element) {
         element.addEventListener('scroll', handleScroll);
       }
@@ -112,21 +115,11 @@ export default function ChatList() {
     return () => unsubscribe("fetchChatList", callback);
   }, []);
 
-  /**
-   * @description: 监听事件
-   */
-  useEffect(() => {
-    const callback: EventListener = () => {
-      console.log("fetchChatList");
-    };
-    subscribe("fetchChatList", callback);
-    return () => unsubscribe("fetchChatList", callback);
-  }, []);
 
   return (
     <div
       ref={chatListRef}
-      className="flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto"
+      className="mb-[60px] mt-2 flex flex-col overflow-y-auto "
     >
       {groupList.map(([data, list]) => {
         return (
