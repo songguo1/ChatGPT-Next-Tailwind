@@ -4,6 +4,9 @@
 
 ![](./public/images/logo.png)
 
+## 项目截图
+![](./public/images/screenshot.png)
+
 ## 使用的技术
 
 - **Next.js**：一个用于服务器端渲染和生成静态网站的 React 框架。
