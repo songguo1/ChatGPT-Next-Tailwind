@@ -17,7 +17,7 @@ const variantStyles = {
     "border border-gray-300 dark:border-gray-600 text-black dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700",
   text: "text-black dark:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700",
   primary:
-    "bg-primary-700 text-white hover:bg-primary-800 hover:text-white shadow-sm disabled:shadow-none disabled:bg-transparent disabled:text-gray-300 dark:disabled:text-gray-600",
+    "bg-sky-700 text-white hover:bg-sky-800 hover:text-white shadow-sm disabled:shadow-none disabled:bg-transparent disabled:text-gray-300 dark:disabled:text-gray-600",
 };
 
 export default function Menubutton({

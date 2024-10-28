@@ -1,7 +1,7 @@
-import { chatList } from "@/types/chat"
+import { Chat } from "@/types/chat"
 
-export function groupByDate(chatList: chatList[]) {
-    const groupMap = new Map<string, chatList[]>()
+export function groupByDate(chatList: Chat[]) {
+    const groupMap = new Map<string, Chat[]>()
     chatList.forEach((item) => {
         const now = new Date()
         const updateTime = new Date(item.updateTime)

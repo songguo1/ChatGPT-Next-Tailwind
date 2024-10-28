@@ -39,7 +39,7 @@ export default function ModelSelect() {
             className={`group hover:text-gray-900 hover:dark:text-gray-100 flex justify-center items-center space-x-2 py-2.5 min-w-[148px] text-sm font-medium border rounded-lg
                 ${selected? "border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100":"boder-transparent text-gray-500 "}`}
           >
-            <span className={`group-hover:text-primary-500 transition-colors duration-100 ${selected? "text-green-700":""}`}>
+            <span className={`group-hover:text-sky-500 transition-colors duration-100 ${selected? "text-green-700":""}`}>
               <img src={item.iconPath} alt={item.name} className="w-6 h-6" />
             </span>
             <span className="transition-colors duration-100">{item.name}</span>

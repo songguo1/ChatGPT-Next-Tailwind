@@ -1,7 +1,7 @@
+
 import AppContextProvider from "@/components/AppContext";
 import EventBusContextProvider from "@/components/EventBusContext";
 import "@/style/globals.css";
-import "@/style/Markdown.css";
 
 export default function RootLayout({
   children,
