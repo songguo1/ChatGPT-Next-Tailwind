@@ -32,6 +32,14 @@ export default function ModelSelect() {
     state: { currentModel },
     dispatch,
   } = useContext(AppContext);
+  //currentModel默认值
+  if (!currentModel) {
+    dispatch({
+      type: ActionType.UPDATE,
+      field: "currentModel",
+      value: models[0].id,
+    });
+  }
   {
     return (
       <>
