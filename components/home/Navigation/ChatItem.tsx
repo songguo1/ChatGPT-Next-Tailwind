@@ -68,8 +68,8 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
     <li
       onClick={() => onSelected(item)}
       key={item.id}
-      className={`relative group border-2 border-sky-800 border-indigo-500 flex items-center p-3 rounded-md space-x-3 cursor-pointer hover: hover:bg-gray-500 ${
-        selected ? "pr-[3.5em] bg-sky-400 text-white hover:bg-sky-400" : ""
+      className={`relative group border-2 border-primary px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow-lg transition-all duration-300 ease-in-out hover:from-purple-500 hover:to-blue-500 hover:border-secondary hover:scale-105 flex items-center p-3 rounded-md space-x-3 cursor-pointer ${
+        selected ? "pr-[3.5em] text-white" : ""
       }`}
     >
       <div>{Deleting ? <PiTrashBold /> : <PiChatBold />}</div>
@@ -84,10 +84,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
         <div className="truncate w-full flex-1 ">{item.title}</div>
       )}
 
-      <div
-        className={`absolute rounded-md group-hover:from-gray-800 right-0 h-full w-10 bg-gradient-to-l from-gray-900
-              ${selected ? "from-sky-800 group-hover:from-sky-800" : ""}`}
-      />
+    
       {selected && (
         <div className="absolute right-1 flex ">
           {Editing || Deleting ? (
