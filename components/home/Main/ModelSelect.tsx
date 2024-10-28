@@ -7,15 +7,15 @@ import { PiLightningFill, PiShootingStarFill } from "react-icons/pi";
 export default function ModelSelect() {
   const models = [
     {
-      id: "gpt-3.5-turbo",
-      name: "GPT-3.5",
-      icon: PiLightningFill,
+      id: "deepseek-chat",
+      name: "DeepSeek V2.5",
+      iconPath: "images/deepseek.png",
     },
-    {
-      id: "gpt-4",
-      name: "GPT-4",
-      icon: PiShootingStarFill,
-    },
+    // {
+    //   id: "gpt-4",
+    //   name: "GPT-4",
+    //   icon: PiShootingStarFill,
+    // },
   ];
   const {
     state: { currentModel },
@@ -40,7 +40,7 @@ export default function ModelSelect() {
                 ${selected? "border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100":"boder-transparent text-gray-500 "}`}
           >
             <span className={`group-hover:text-primary-500 transition-colors duration-100 ${selected? "text-green-700":""}`}>
-              <item.icon></item.icon>
+              <img src={item.iconPath} alt={item.name} className="w-6 h-6" />
             </span>
             <span className="transition-colors duration-100">{item.name}</span>
           </button>

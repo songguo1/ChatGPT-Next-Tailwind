@@ -60,7 +60,7 @@ export default function MessageList() {
                         >
                             <div className='w-full max-w-4xl mx-auto flex space-x-6 px-4 py-6 text-lg'>
                                 <div className='text-3xl leading-[1]'>
-                                    {isUser ? "😊" : <SiOpenai />}
+                                    {isUser ? <img className="w-7" src="images/user.svg" ></img> : <img className="w-10" src="images/assistant.png"></img>}
                                 </div>
                                 <div className='flex-1'>
                                     <Markdown>{`${message.content}${message.id===streamingId ? "▍" : ""}`}</Markdown>

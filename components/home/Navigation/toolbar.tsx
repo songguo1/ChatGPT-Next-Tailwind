@@ -3,7 +3,7 @@ import Menubutton from "@/components/common/Menubutton";
 import Button from "@/components/common/Togglebutton";
 import { ActionType } from "@/reducers/AppReducer";
 import { useContext } from "react";
-import { MdInfo } from "react-icons/md";
+import { FaGithub } from "react-icons/fa";
 
 export default function Toolbar() {
   const { state ,dispatch} = useContext(AppContext);
@@ -17,7 +17,8 @@ export default function Toolbar() {
             value:state.themeMode=="dark"?"light":"dark"
         })
       }}></Button>
-      <Menubutton icon={MdInfo} variant="text"></Menubutton>
+      <a className="flex items-center text-white mr-4 " href="https://github.com/songguo1"><FaGithub size={24} /></a>
+      
     </nav>
   );
 }

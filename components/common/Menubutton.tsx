@@ -30,6 +30,7 @@ export default function Menubutton({
 }: Props) {
   return (
     <button
+    
       className={`transition-colors inline-flex items-center min-w-[38px] min-h-[38px] rounded px-3 py-1.5
         ${variantStyles[variant || "default"]}
          ${className}`}
